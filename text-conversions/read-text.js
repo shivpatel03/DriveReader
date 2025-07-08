@@ -21,18 +21,23 @@ async function extractText(drive, fileId) {
 
         switch (mimeType) {
             case 'application/pdf':
+                // pdfs
                 return await extractPDFText(drive, fileId, fileName);
             case 'application/vnd.google-apps.document':
+                // google docs
                 return await extractDocumentText(drive, fileId, fileName);
             case 'application/vnd.google-apps.spreadsheet':
+                // google sheets
                 return await extractSpreadsheetText(drive, fileId, fileName);
             case 'application/vnd.google-apps.presentation':
+                // google presentations
                 return await extractPresentationText(drive, fileId, fileName);
             case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                // word docs
                 return await extractWordDoc(drive, fileId, fileName);
             case 'text/plain':
+                // plain text files
                 return await extractPlainText(drive, fileId, fileName);
-                
             default:
                 throw new Error(`Unsupported file type: ${mimeType}`);
         }
@@ -134,20 +139,21 @@ async function extractPresentationText(drive, fileId, fileName) {
  * @returns {Promise<string>} - The extracted text from the file
  */
 async function extractWordDoc(drive, fileId, fileName) {
-    console.log(`Extracting text from file ${fileName}...`);
-    const textResponse = await drive.files.export({
+    console.log(`Extracting text from Word document ${fileName}...`);
+    const response = await drive.files.get({
         fileId: fileId,
         alt: 'media'
     }, { responseType: 'arraybuffer' });
 
-    const buffer = await handleArrayBuffer(textResponse);
+    const buffer = await handleArrayBuffer(response);
 
     const mammoth = require('mammoth');
-    const result = await mammoth.convertToText(buffer);
+    const result = await mammoth.extractRawText({ buffer: buffer }); // Use extractRawText instead of convertToText
 
     saveFile(result.value, fileName, './saved-outputs/word-doc');
     return result.value;
 }
+
 
 /**
  * Extracts text from a Plain Text file

@@ -11,7 +11,6 @@ async function main() {
 
   // get files in the drive
   const res = await drive.files.list({
-    pageSize: 10,
     q: "mimeType='application/vnd.google-apps.document'",
     fields: 'nextPageToken, files(id, name, webViewLink, mimeType, kind)'
   })
