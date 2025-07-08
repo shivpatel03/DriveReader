@@ -8,3 +8,4 @@ npm install
 node index.js
 ```
 - This will create a file called `token.json`
+- You can use `index.js` to get data and process it from your Google Drive
